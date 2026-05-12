@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Aventura: Programación Móvil</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            background-color: #ffffff; 
+            color: #333; 
+            max-width: 600px; 
+            margin: auto; 
+            padding: 50px 20px; 
+            line-height: 1.6;
+        }
+        
+        h2 { 
+            padding-bottom: 10px; 
+            margin-bottom: 20px;
+        }
+
+        table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+        th, td { border: 1px solid #eee; padding: 12px; text-align: left; }
+        th { background-color: #fafafa; }
+
+        ul { list-style: none; padding: 0; }
+        li { background: #f9f9f9; margin-bottom: 5px; padding: 10px; border-radius: 4px; }
+
+        .hidden { display: none; }
+        .error { color: #d93025; background: #fce8e6; padding: 10px; border-radius: 4px; margin-bottom: 20px; }
+
+        input[type="text"] { 
+            width: 100%; 
+            padding: 12px; 
+            margin-top: 5px; 
+            border: 1px solid #ddd; 
+            border-radius: 4px; 
+            box-sizing: border-box; 
+            font-family: Arial, sans-serif; 
+        }
+        
+        button { 
+            width: 100%; 
+            padding: 15px; 
+            border: none; 
+            border-radius: 4px; 
+            cursor: pointer; 
+            font-size: 16px; 
+            transition: 0.2s; 
+            font-family: Arial, sans-serif; 
+        }
+        
+        .btn-main { background-color: #1a1a1a; color: white; margin-top: 20px; }
+        .btn-main:hover { background-color: #444; }
+        .btn-back { background-color: transparent; color: #777; text-decoration: underline; margin-top: 15px; }
+    </style>
+</head>
+<body>
+
+    <h2>{{ etapa.titulo }}</h2>
+    
+    <div id="pantalla-lectura">
+        <p><strong>Contenido de la sección:</strong></p>
+        {% if etapa.tipo == 'tabla' %}
+            <table>
+                <thead>
+                    <tr>{% for h in etapa.encabezados %} <th>{{ h }}</th> {% endfor %}</tr>
+                </thead>
+                <tbody>
+                    {% for fila in etapa.filas %}
+                        <tr>{% for celda in fila %} <td>{{ celda }}</td> {% endfor %}</tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <ul>
+                {% for item in etapa.info %} <li>{{ item }}</li> {% endfor %}
+            </ul>
+        {% endif %}
+        <button class="btn-main" onclick="activarPreguntas()">Siguiente</button>
+    </div>
+
+    <div id="pantalla-preguntas" class="hidden">
+        {% if error %}<div class="error">{{ error }}</div>{% endif %}
+        <form method="GET" action="/">
+            <input type="hidden" name="paso" value="{{ paso_actual }}">
+            {% for p in etapa.preguntas %}
+                <p>
+                    <label><strong>{{ p.q }}</strong></label><br>
+                    <input type="text" name="r{{ loop.index }}" required autocomplete="off">
+                </p>
+            {% endfor %}
+            <p><label><input type="checkbox" name="check" required> Acepto</label></p>
+            <button type="submit" class="btn-main">Siguiente</button>
+            <button type="button" class="btn-back" onclick="volverLectura()">Volver a leer</button>
+        </form>
+    </div>
+
+    <script>
+        function activarPreguntas() {
+            document.getElementById('pantalla-lectura').classList.add('hidden');
+            document.getElementById('pantalla-preguntas').classList.remove('hidden');
+        }
+        function volverLectura() {
+            document.getElementById('pantalla-preguntas').classList.add('hidden');
+            document.getElementById('pantalla-lectura').classList.remove('hidden');
+        }
+        {% if error %} activarPreguntas(); {% endif %}
+    </script>
+</body>
+</html>
