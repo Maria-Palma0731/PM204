@@ -204,7 +204,7 @@ const confirmarPedido = (nombreCliente) => {
   });
   console.log(`\n  Subtotal: $${subtotal.toFixed(2)}`);
   console.log(`  IVA 16% : $${iva.toFixed(2)}`);
-  console.log(`  Total   : $${total.toFixed(2)}`);
+  console.log(`  Total   : $${total.toFiMARxed(2)}`);
   console.log(`\n  Gracias ${nombreCliente}! Tu pedido estara listo en breve.`);
 
   pedido = [];

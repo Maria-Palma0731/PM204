@@ -166,7 +166,6 @@ const iniciar = async () => {
       mostrarPedidosGuardados();
       const folio = (await preguntar("  Folio a eliminar   : ")).trim().toUpperCase();
       eliminarPedidoPorFolio(folio);
-
     } else if (opcion === "3") {
       mostrarMenu();
       mostrarPromociones();
