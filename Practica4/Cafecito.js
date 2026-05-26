@@ -1,0 +1,479 @@
+const readline = require("readline");
+const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
+const preguntar = (texto) => new Promise(res => rl.question(texto, res));
+
+const ExpresAmericano = new Object();
+ExpresAmericano.nombre     = "Expres Americano";
+ExpresAmericano.precio     = 45;
+ExpresAmericano.categoria  = "bebida";
+ExpresAmericano.disponible = true;
+ExpresAmericano.promocion  = true;
+
+const Capuccino = new Object();
+Capuccino.nombre     = "Capuccino";
+Capuccino.precio     = 60;
+Capuccino.categoria  = "bebida";
+Capuccino.disponible = true;
+Capuccino.promocion  = false;
+
+const Latte = new Object();
+Latte.nombre     = "Latte";
+Latte.precio     = 65;
+Latte.categoria  = "bebida";
+Latte.disponible = false;
+Latte.promocion  = false;
+
+const SandwichJamon = new Object();
+SandwichJamon.nombre     = "Sandwich de Jamon";
+SandwichJamon.precio     = 75;
+SandwichJamon.categoria  = "alimento";
+SandwichJamon.disponible = true;
+SandwichJamon.promocion  = false;
+
+const EnsaladaCeser = new Object();
+EnsaladaCeser.nombre     = "Ensalada Cesar";
+EnsaladaCeser.precio     = 90;
+EnsaladaCeser.categoria  = "alimento";
+EnsaladaCeser.disponible = true;
+EnsaladaCeser.promocion  = true;
+
+const Hamburguesa = new Object();
+Hamburguesa.nombre     = "Hamburguesa";
+Hamburguesa.precio     = 120;
+Hamburguesa.categoria  = "alimento";
+Hamburguesa.disponible = false;
+Hamburguesa.promocion  = false;
+
+const Croissant = new Object();
+Croissant.nombre     = "Croissant";
+Croissant.precio     = 35;
+Croissant.categoria  = "postre";
+Croissant.disponible = true;
+Croissant.promocion  = false;
+
+const DonaChocolate = new Object();
+DonaChocolate.nombre     = "Dona de Chocolate";
+DonaChocolate.precio     = 30;
+DonaChocolate.categoria  = "postre";
+DonaChocolate.disponible = true;
+DonaChocolate.promocion  = true;
+
+const Muffin = new Object();
+Muffin.nombre     = "Muffin de Vainilla";
+Muffin.precio     = 40;
+Muffin.categoria  = "postre";
+Muffin.disponible = true;
+Muffin.promocion  = false;
+
+const bebidas   = [ExpresAmericano, Capuccino, Latte];
+const alimentos = [SandwichJamon, EnsaladaCeser, Hamburguesa];
+const panaderia = [Croissant, DonaChocolate, Muffin];
+
+const catalogo  = [ExpresAmericano, Capuccino, Latte,
+                   SandwichJamon, EnsaladaCeser, Hamburguesa,
+                   Croissant, DonaChocolate, Muffin];
+
+// MODULO CLIENTE
+
+const DESCUENTO = 0.15;
+const IVA       = 0.16;
+
+let pedido           = [];
+let pedidosGuardados = [];
+let contadorFolio    = 100;
+
+// [CLIENTE] map() — genera el menu solo desde el arreglo
+const mostrarMenu = () => {
+  const disponibles = catalogo.filter(p => p.disponible === true);
+  console.log("\n         MENU CAFECITO");
+  console.log("  #   Producto                Categoria    Precio");
+  disponibles.map((p, i) =>
+    `  [${i + 1}] ${p.nombre.padEnd(22)}  ${p.categoria.padEnd(10)}  $${p.precio}`
+  ).forEach(linea => console.log(linea));
+  console.log("");
+};
+
+// [CLIENTE] forEach() — muestra solo productos en promocion
+const mostrarPromociones = () => {
+  const enPromocion = catalogo.filter(p => p.promocion === true);
+  console.log("      PROMOCIONES DEL DIA");
+  enPromocion.forEach(p => {
+    const precioFinal = (p.precio * (1 - DESCUENTO)).toFixed(2);
+    console.log(`  ${p.nombre.padEnd(22)}  $${p.precio} -> $${precioFinal}`);
+  });
+  console.log("");
+};
+
+// [CLIENTE] muestra los productos del pedido en curso
+const mostrarPedido = () => {
+  console.log("\n--- Pedido actual: ---");
+  if (pedido.length === 0) {
+    console.log("  (vacio)");
+  } else {
+    pedido.forEach((item, i) =>
+      console.log(`  ${i + 1}. ${item.nombre.padEnd(22)} x${item.cantidad}  $${item.precio * item.cantidad}`)
+    );
+    console.log(`  Subtotal: $${calcularSubtotal().toFixed(2)}`);
+  }
+  console.log("");
+};
+
+// [CLIENTE] agrega un producto al pedido actual
+const agregarAlPedido = (seleccion, cantidad) => {
+  const disponibles = catalogo.filter(p => p.disponible === true);
+  if (seleccion < 1 || seleccion > disponibles.length) {
+    console.log(`  Opcion ${seleccion} no valida.`);
+    return;
+  }
+  const producto  = disponibles[seleccion - 1];
+  const existente = pedido.find(p => p.nombre === producto.nombre);
+  if (existente) {
+    existente.cantidad += cantidad;
+  } else {
+    pedido.push({ ...producto, cantidad });
+  }
+  console.log(`  Agregado: ${producto.nombre} x${cantidad}`);
+};
+
+// MODULO CAJA
+
+// [CAJA] reduce + destructuring — suma el subtotal del pedido
+const calcularSubtotal = () =>
+  pedido.reduce((acumulador, producto) => {
+    const { precio } = producto;
+    return acumulador + precio * producto.cantidad;
+  }, 0);
+
+// [CAJA] muestra todos los pedidos confirmados con IVA y total
+const mostrarPedidosGuardados = () => {
+  console.log("\nPEDIDOS GUARDADOS");
+  if (pedidosGuardados.length === 0) {
+    console.log("  (sin pedidos aun)");
+  } else {
+    pedidosGuardados.forEach(p => {
+      console.log(`\n  Folio   : ${p.folio}`);
+      console.log(`  Cliente : ${p.cliente}`);
+      p.items.forEach(item => {
+        const { nombre, precio } = item;
+        console.log(`    - ${nombre} x${item.cantidad}  $${precio * item.cantidad}`);
+      });
+      console.log(`  Subtotal: $${p.subtotal.toFixed(2)}`);
+      console.log(`  IVA 16% : $${p.iva.toFixed(2)}`);
+      console.log(`  Total   : $${p.total.toFixed(2)}`);
+    });
+  }
+  console.log("");
+};
+
+// [CAJA] elimina un pedido guardado buscandolo por folio
+const eliminarPedidoGuardado = async () => {
+  if (pedidosGuardados.length === 0) {
+    console.log("  No hay pedidos guardados.");
+    return;
+  }
+  const folio  = (await preguntar("  Folio a eliminar : ")).trim().toUpperCase();
+  const indice = pedidosGuardados.findIndex(p => p.folio === folio);
+  if (indice !== -1) {
+    pedidosGuardados.splice(indice, 1);
+    console.log(`  Pedido ${folio} eliminado.`);
+  } else {
+    console.log(`  Folio ${folio} no encontrado.`);
+  }
+};
+
+// [CAJA] confirma el pedido, calcula IVA, guarda con folio y manda a cocina
+const confirmarPedido = async (nombreCliente) => {
+  if (pedido.length === 0) {
+    console.log("  El pedido esta vacio.");
+    return;
+  }
+  const folio    = `PED-${++contadorFolio}`;
+  const subtotal = calcularSubtotal();
+  const iva      = subtotal * IVA;
+  const total    = subtotal + iva;
+
+  const pedidoFinal = { folio, cliente: nombreCliente, items: [...pedido], subtotal, iva, total };
+  pedidosGuardados.push(pedidoFinal);
+
+  console.log(`\n  Pedido confirmado.`);
+  console.log(`  Folio   : ${folio}`);
+  console.log(`  Cliente : ${nombreCliente}`);
+  pedido.forEach(item => {
+    const { nombre, precio } = item;
+    console.log(`    - ${nombre} x${item.cantidad}  $${precio * item.cantidad}`);
+  });
+  console.log(`\n  Subtotal: $${subtotal.toFixed(2)}`);
+  console.log(`  IVA 16% : $${iva.toFixed(2)}`);
+  console.log(`  Total   : $${total.toFixed(2)}`);
+  console.log(`\n  Gracias ${nombreCliente}! Tu pedido estara listo en breve.`);
+
+  await mostrarEstados(folio, pedidoFinal.items);
+
+  pedido = [];
+};
+
+// MODULO COCINA
+
+// [COCINA] muestra todos los productos del catalogo
+const mostrarCatalogo = () => {
+  console.log("\n           CATALOGO");
+  catalogo.forEach(producto => {
+    console.log("Nombre: " + producto.nombre + " | Precio: $" + producto.precio + " | Disponible: " + producto.disponible);
+  });
+};
+
+// [COCINA] agrega un producto nuevo al catalogo
+const agregarProducto = (producto) => {
+  catalogo.push(producto);
+  console.log("Producto agregado correctamente");
+};
+
+// [COCINA] busca un producto por nombre y actualiza sus datos
+const actualizarProducto = (nombreProducto, nuevosDatos) => {
+  const producto = catalogo.find(item => item.nombre === nombreProducto);
+  if (producto) {
+    Object.assign(producto, nuevosDatos);
+    console.log("Producto actualizado");
+  } else {
+    console.log("Producto no encontrado");
+  }
+};
+
+// [COCINA] elimina un producto del catalogo por nombre
+const eliminarDelCatalogo = (nombreProducto) => {
+  const indice = catalogo.findIndex(item => item.nombre === nombreProducto);
+  if (indice !== -1) {
+    catalogo.splice(indice, 1);
+    console.log("Producto eliminado del catalogo");
+  } else {
+    console.log("Producto no encontrado");
+  }
+};
+
+// [COCINA] filter() — busqueda interactiva por precio o categoria
+const buscar = async () => {
+  console.log("\nQue quieres buscar?");
+  console.log("1. Productos baratos");
+  console.log("2. Productos caros");
+  console.log("3. Bebidas");
+  console.log("4. Postres");
+
+  const tipo = await preguntar("\nElige una opcion: ");
+
+  if (tipo === "1") {
+    const input     = await preguntar("Mostrar productos menores a: $");
+    const limite    = Number(input);
+    const resultado = catalogo.filter(producto => producto.precio < limite);
+    console.log(`\nProductos menores a $${limite}:`);
+    resultado.forEach(p => console.log(p.nombre + " - $" + p.precio));
+
+  } else if (tipo === "2") {
+    const input     = await preguntar("Mostrar productos mayores a: $");
+    const limite    = Number(input);
+    const resultado = catalogo.filter(producto => producto.precio > limite);
+    console.log(`\nProductos mayores a $${limite}:`);
+    resultado.forEach(p => console.log(p.nombre + " - $" + p.precio));
+
+  } else if (tipo === "3") {
+    const resultado = catalogo.filter(producto => producto.categoria === "bebida");
+    console.log("\nBebidas:");
+    resultado.forEach(p => console.log(p.nombre + " - $" + p.precio));
+
+  } else if (tipo === "4") {
+    const resultado = catalogo.filter(producto => producto.categoria === "postre");
+    console.log("\nPostres:");
+    resultado.forEach(p => console.log(p.nombre + " - $" + p.precio));
+
+  } else {
+    console.log("Opcion no valida.");
+  }
+};
+
+// [COCINA] Promise — simula preparacion de una bebida
+const prepararCafe = (nombreProducto) =>
+  new Promise((resolve, reject) => {
+    setTimeout(() => console.log(`  > Moliendo cafe para ${nombreProducto}...`),  500);
+    setTimeout(() => console.log(`  > Calentando agua...`),                       1000);
+    setTimeout(() => console.log(`  > Sirviendo en vaso...`),                     1500);
+    setTimeout(() => resolve(`${nombreProducto} listo.`),                         2000);
+  });
+
+// [COCINA] Promise — simula error durante la preparacion
+const errorCocina = (nombreProducto) =>
+  new Promise((resolve, reject) => {
+    setTimeout(() => console.log(`  > Calentando agua...`),                       500);
+    setTimeout(() => console.log(`  > ALERTA: Temperatura inestable...`),         1000);
+    setTimeout(() => reject(`Error en la preparacion de ${nombreProducto}. Pedido cancelado.`), 1500);
+  });
+
+// [COCINA] Promise — simula falta de ingrediente
+const faltaIngrediente = (nombreProducto) =>
+  new Promise((resolve, reject) => {
+    setTimeout(() => console.log(`  > Buscando ingredientes en inventario...`),   500);
+    setTimeout(() => console.log(`  > Ingrediente no encontrado...`),             1000);
+    setTimeout(() => reject(`Falta ingrediente para ${nombreProducto}. Pedido cancelado.`), 1500);
+  });
+
+// [COCINA] Promise.all — procesa todos los productos del pedido en paralelo
+const procesarEnCocina = (items) => {
+  const promesas = items.map(producto => {
+    const esBebida   = bebidas.some(b => b.nombre === producto.nombre);
+    const hayError   = producto.nombre === "Ensalada Cesar";
+    const faltaStock = producto.nombre === "Muffin de Vainilla";
+
+    if (hayError)   return errorCocina(producto.nombre);
+    if (faltaStock) return faltaIngrediente(producto.nombre);
+    if (esBebida)   return prepararCafe(producto.nombre);
+    return prepararCafe(producto.nombre);
+  });
+
+  return Promise.all(promesas);
+};
+
+// [COCINA] setTimeout — barra de progreso animada
+const esperar = (ms, mensaje) => new Promise(res => {
+  const pasos     = 20;
+  const intervalo = ms / pasos;
+  let actual      = 0;
+
+  const barra = setInterval(() => {
+    actual++;
+    const porcentaje = Math.round((actual / pasos) * 100);
+    const relleno    = "*".repeat(actual);
+    const vacio      = " ".repeat(pasos - actual);
+    process.stdout.write(`\r  ${mensaje}  [${relleno}${vacio}] ${porcentaje}%`);
+
+    if (actual === pasos) {
+      clearInterval(barra);
+      process.stdout.write(`\r  ${mensaje}  [${"*".repeat(pasos)}] 100%\n`);
+      res();
+    }
+  }, intervalo);
+});
+
+// [COCINA] async/await — muestra el seguimiento del pedido y espera el resultado de cocina
+const mostrarEstados = async (folio, items) => {
+  console.log(`\n  Folio ${folio} — seguimiento:`);
+
+  await esperar(1500, "Pedido recibido    ");
+  console.log(`  > Pedido registrado en el sistema.\n`);
+
+  await esperar(3000, "Preparando pedido  ");
+  console.log(`  > Iniciando preparacion de productos...\n`);
+
+  const promesaCocina = procesarEnCocina(items);
+
+  try {
+    const resultados = await promesaCocina;
+    console.log("\n  Comentarios:");
+    resultados.forEach(r => console.log(`  > ${r}`));
+  } catch (error) {
+    console.log(`\n  Comentarios:`);
+    console.log(`  > ${error}`);
+    console.log("\n  Pedido cancelado.");
+    console.log("  Listo para la siguiente orden.\n");
+    return;
+  }
+
+  await esperar(2000, "Empacando pedido   ");
+  console.log(`  > Verificando productos...\n`);
+
+  console.log("  Pedido entregado.");
+  console.log("  Listo para la siguiente orden.\n");
+};
+
+// INICIO
+
+const iniciar = async () => {
+  console.log("\nBienvenido a Cafecito");
+
+  const nombre = await preguntar("\n¿Cual es tu nombre? ");
+  console.log(`\nHola, ${nombre}!`);
+
+  mostrarMenu();
+  mostrarPromociones();
+
+  let activo = true;
+
+  while (activo) {
+    mostrarPedido();
+    console.log("  PEDIDO:");
+    console.log("  1 - Agregar producto");
+    console.log("  2 - Confirmar pedido");
+    console.log("  CAJA:");
+    console.log("  3 - Pedidos guardados");
+    console.log("  4 - Eliminar pedido por folio");
+    console.log("  COCINA:");
+    console.log("  5 - Ver catalogo");
+    console.log("  6 - Buscar productos");
+    console.log("  7 - Agregar al catalogo");
+    console.log("  8 - Actualizar producto");
+    console.log("  9 - Eliminar del catalogo");
+    console.log("  0 - Salir");
+
+    const opcion = (await preguntar("\n  Opcion: ")).trim();
+
+    switch (opcion) {
+      case "1":
+        const id  = parseInt(await preguntar("  Numero de producto : "));
+        const cnt = parseInt(await preguntar("  Cantidad           : ")) || 1;
+        agregarAlPedido(id, cnt);
+        break;
+
+      case "2":
+        await confirmarPedido(nombre);
+        break;
+
+      case "3":
+        mostrarPedidosGuardados();
+        break;
+
+      case "4":
+        await eliminarPedidoGuardado();
+        break;
+
+      case "5":
+        mostrarCatalogo();
+        break;
+
+      case "6":
+        await buscar();
+        break;
+
+      case "7":
+        const nomb = await preguntar("  Nombre     : ");
+        const prec = await preguntar("  Precio     : $");
+        const cat  = await preguntar("  Categoria  (bebida / alimento / postre): ");
+        const nuevo = new Object();
+        nuevo.nombre     = nomb;
+        nuevo.precio     = Number(prec);
+        nuevo.categoria  = cat;
+        nuevo.disponible = true;
+        nuevo.promocion  = false;
+        agregarProducto(nuevo);
+        break;
+
+      case "8":
+        const nombAct = await preguntar("  Nombre del producto : ");
+        const precAct = await preguntar("  Nuevo precio        : $");
+        actualizarProducto(nombAct, { precio: Number(precAct) });
+        break;
+
+      case "9":
+        const nombDel = await preguntar("  Nombre del producto : ");
+        eliminarDelCatalogo(nombDel);
+        break;
+
+      case "0":
+        console.log(`\n  Hasta pronto, ${nombre}.\n`);
+        activo = false;
+        rl.close();
+        break;
+
+      default:
+        console.log(`  Opcion "${opcion}" no valida.`);
+    }
+  }
+};
+
+iniciar();
