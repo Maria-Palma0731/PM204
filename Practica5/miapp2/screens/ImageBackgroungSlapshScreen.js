@@ -1,6 +1,6 @@
 /* ZONA 1: Importaciones */
-import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, Button, ImageBackground as RNImageBackground, Image } from 'react-native';
+import { useState, useEffect } from 'react';
+import { StyleSheet, Text, View, Button, ImageBackground, Image } from 'react-native';
 import * as SplashScreen from 'expo-splash-screen';
 
 /* ZONA 2: Componente principal */
@@ -47,15 +47,15 @@ export default function ImageBackgroundScreen() {
           source={require('../assets/wave.png')} 
           style={styles.wave} 
         />
-
         <Text style={styles.splashTitulo}>
           Cargando app...
         </Text>
       </View>
     );
   }
+
   return (
-    <RNImageBackground
+    <ImageBackground
       source={imagenes[imagenIndex]}
       style={styles.contenedor}
       imageStyle={styles.imagen}
@@ -94,10 +94,9 @@ export default function ImageBackgroundScreen() {
 
       </View>
 
-    </RNImageBackground>
+    </ImageBackground>
   );
 }
-
 
 /* ZONA 3: Estilos */
 const styles = StyleSheet.create({
