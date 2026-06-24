@@ -64,7 +64,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: '25',
     borderRadius: 10,
   },
-  textoBoton: {
+  textoBoton: { 
     color: 'white',
     fontSize: 18,
     fontWeight: 'bold',
