@@ -43,9 +43,9 @@ export default function ImageBackgroundScreen() {
   if (!appLista) {
     return (
       <View style={styles.splash}>
-        <Image 
-          source={require('../assets/wave.png')} 
-          style={styles.wave} 
+        <Image
+          source={require('../assets/wave.png')}
+          style={styles.wave}
         />
         <Text style={styles.splashTitulo}>
           Cargando app...
@@ -60,66 +60,50 @@ export default function ImageBackgroundScreen() {
       style={styles.contenedor}
       imageStyle={styles.imagen}
       blurRadius={blur}
-      onLoad={() => console.log('Imagen cargada')}
-      onError={() => console.warn('Error al cargar imagen')}
     >
-
       <View style={styles.tarjeta}>
-
         <Text style={styles.subtitulo}>
           ImageBackground
         </Text>
-
-        <Text style={styles.etiqueta}>
+        <Text style={styles.subtitulo}>
           Imagen {imagenIndex + 1} de {imagenes.length}
         </Text>
-
         <Button
           title="Cambiar imagen"
           onPress={() => setImagenIndex((imagenIndex + 1) % imagenes.length)}
           color="#00B4D8"
         />
-
-        <View style={styles.espacio} />
-
-        <Text style={styles.etiqueta}>
+        <Text style={styles.subtitulo}>
           blurRadius: {blur}
         </Text>
-
         <Button
           title={blur > 0 ? 'Quitar blur' : 'Aplicar blur'}
           onPress={() => setBlur(blur > 0 ? 0 : 10)}
           color="#7B68EE"
         />
-
       </View>
-
     </ImageBackground>
   );
 }
 
 /* ZONA 3: Estilos */
 const styles = StyleSheet.create({
-
   splash: {
     flex: 1,
     backgroundColor: '#fff',
     alignItems: 'center',
     justifyContent: 'center',
   },
-
   wave: {
     width: 80,
     height: 80,
     marginBottom: 20,
   },
-
   splashTitulo: {
     fontSize: 20,
     fontWeight: '600',
     color: '#333',
   },
-
   contenedor: {
     flex: 1,
     width: '100%',
@@ -127,39 +111,24 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-
   imagen: {
     resizeMode: 'cover',
     opacity: 0.75,
   },
-
   tarjeta: {
-    backgroundColor: 'rgba(0, 0, 0, 0.65)',
+    backgroundColor: '#000000aa',
     padding: 24,
     borderRadius: 16,
     width: '82%',
     maxWidth: 360,
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.2)',
+    borderColor: '#ffffff33',
   },
-
   subtitulo: {
     color: '#dddddd',
     fontSize: 13,
     marginBottom: 20,
     fontStyle: 'italic',
   },
-
-  etiqueta: {
-    color: 'rgba(255,255,255,0.7)',
-    fontSize: 11,
-    marginBottom: 6,
-    textAlign: 'center',
-  },
-
-  espacio: {
-    height: 12,
-  },
-
 });
