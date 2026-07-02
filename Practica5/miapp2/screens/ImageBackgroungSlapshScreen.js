@@ -47,9 +47,7 @@ export default function ImageBackgroundScreen() {
           source={require('../assets/wave.png')}
           style={styles.wave}
         />
-        <Text style={styles.splashTitulo}>
-          Cargando app...
-        </Text>
+        <Text style={styles.splashTitulo}> Cargando app... </Text>
       </View>
     );
   }
@@ -62,20 +60,15 @@ export default function ImageBackgroundScreen() {
       blurRadius={blur}
     >
       <View style={styles.tarjeta}>
-        <Text style={styles.subtitulo}>
-          ImageBackground
-        </Text>
-        <Text style={styles.subtitulo}>
-          Imagen {imagenIndex + 1} de {imagenes.length}
+        <Text style={styles.subtitulo}> ImageBackground </Text>
+        <Text style={styles.subtitulo}> Imagen {imagenIndex + 1} de {imagenes.length}
         </Text>
         <Button
           title="Cambiar imagen"
           onPress={() => setImagenIndex((imagenIndex + 1) % imagenes.length)}
           color="#00B4D8"
         />
-        <Text style={styles.subtitulo}>
-          blurRadius: {blur}
-        </Text>
+        <Text style={styles.subtitulo}> blurRadius: {blur} </Text>
         <Button
           title={blur > 0 ? 'Quitar blur' : 'Aplicar blur'}
           onPress={() => setBlur(blur > 0 ? 0 : 10)}
