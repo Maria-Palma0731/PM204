@@ -1,16 +1,27 @@
-import React from 'react';
-import {SafeAreaView,View,Text,FlatList,StyleSheet,
-} from 'react-native';
+import React,{useState,useEffect} from 'react';/**comenzamos importando */
+import {SafeAreaView,View,Text,FlatList,StyleSheet,} from 'react-native';
 
 export default function ConsultaUsuariosScreen() {
 
-  const usuarios = [
-    { id: '1', nombre: 'Isay Guerra', edad: 22 },
-    { id: '2', nombre: 'Ana López', edad: 19 },
-    { id: '3', nombre: 'Carlos Gonzalez', edad: 25 },
-    { id: '4', nombre: 'Bjork Guerra', edad: 21 },
-    { id: '5', nombre: 'Luisa Martínez', edad: 28 },
-  ];
+  const [usuarios, setUsuarios] = useState([]);/*eliminamos el arreglo de usurios y lo hacemos en estado,iniciamos el estado de usuario */
+
+  const obtenerUsuarios = async () => {
+    try{
+      const respuesta = await fetch('http://10.177.95.192:5000/v1/usuarios');/*hacemos la peticion a la api */
+      const datos= await respuesta.json();/*convertimos la respuesta a json */
+      console.log("Respuesta API:",datos);/*mostramos la respuesta en consola */
+
+      setUsuarios(datos.usuarios);
+
+    }catch(error){
+      console.log("Error de Api",error);
+    }
+  }
+
+  useEffect(()=>{obtenerUsuarios();},[]) /* ejecutamos la función al cargar el componente */
+
+
+
 
   const renderTarjeta = ({ item }) => (
     <View style={styles.card}>

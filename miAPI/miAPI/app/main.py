@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from app.routers import usuarios
 from app.data.db import engine
 from app.data import usuarioDB
+from fastapi.middleware.cors import CORSMiddleware
 
 #pertenece al funcionamiento del ORM de SQLAlchemy y sirve para 
 #crear automáticamente las tablas en la base de datos si aún no existen.
@@ -14,4 +15,15 @@ app = FastAPI(
     version="1.0.0"
 )
 
+origins = [
+  "*"
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 app.include_router(usuarios.router)
