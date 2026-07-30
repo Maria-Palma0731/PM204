@@ -4,7 +4,7 @@ import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
 
 export default function TabsLayout() {
     return (
-        <Tabs>
+        <Tabs screenOptions={{ headerShown: false }}>
             <Tabs.Screen name="index" options={{ title: "Inicio" , href:null,}}/>
             <Tabs.Screen
                 name="alta"

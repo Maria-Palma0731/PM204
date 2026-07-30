@@ -1,9 +1,11 @@
-import React,{useState,useEffect} from 'react';/**comenzamos importando */
-import {SafeAreaView,View,Text,FlatList,StyleSheet,} from 'react-native';
+import React,{useState,useEffect,useCallback} from 'react';/**comenzamos importando */
+import {SafeAreaView,View,Text,FlatList,StyleSheet,Pressable,} from 'react-native';
+import {useFocusEffect, useRouter} from 'expo-router';
 
 export default function ConsultaUsuariosScreen() {
 
   const [usuarios, setUsuarios] = useState([]);/*eliminamos el arreglo de usurios y lo hacemos en estado,iniciamos el estado de usuario */
+  const router = useRouter();
 
   const obtenerUsuarios = async () => {
     try{
@@ -20,8 +22,20 @@ export default function ConsultaUsuariosScreen() {
 
   useEffect(()=>{obtenerUsuarios();},[]) /* ejecutamos la función al cargar el componente */
 
+  useFocusEffect(
+    useCallback(() => {
+      obtenerUsuarios();
+    }, [])
+  );
 
-
+  const irADetalles = (usuario) => {
+    router.push({
+      pathname: '/detalle',
+      params: {
+        id: String(usuario.id),
+      },
+    });
+  };
 
   const renderTarjeta = ({ item }) => (
     <View style={styles.card}>
@@ -33,6 +47,10 @@ export default function ConsultaUsuariosScreen() {
       <Text style={styles.info}>
         Edad: {item.edad} años
       </Text>
+
+      <Pressable style={styles.botonDetalle} onPress={() => irADetalles(item)}>
+        <Text style={styles.textoBotonDetalle}>Ver detalles</Text>
+      </Pressable>
 
     </View>
   );
@@ -105,6 +123,20 @@ const styles = StyleSheet.create({
   info: {
     fontSize: 16,
     color: '#4B5563',
+    marginBottom: 12,
+  },
+
+  botonDetalle: {
+    alignSelf: 'flex-end',
+    backgroundColor: '#2563EB',
+    paddingVertical: 10,
+    paddingHorizontal: 14,
+    borderRadius: 10,
+  },
+
+  textoBotonDetalle: {
+    color: '#FFFFFF',
+    fontWeight: 'bold',
   },
 
 });
