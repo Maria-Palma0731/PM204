@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react';
 import {SafeAreaView,View,Text,TextInput,Pressable,StyleSheet,Alert,Platform,ActivityIndicator} from 'react-native';
 import {useLocalSearchParams, useRouter} from 'expo-router';
 
-const API_URL = 'http://10.177.95.192:5000/v1/usuarios';
+const API_URL = 'http://10.16.72.150:5000/v1/usuarios';
 const AUTH_HEADER = typeof btoa === 'function' ? `Basic ${btoa('admin:1234')}` : 'Basic YWRtaW46MTIzNA==';
 
 export default function ActualizarUsuarioScreen() {

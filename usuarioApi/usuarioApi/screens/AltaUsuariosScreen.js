@@ -33,7 +33,7 @@ export default function App() {
     try {
       setCargando(true);
 
-      const respuesta = await fetch('http://10.177.95.192:5000/v1/usuarios/', {
+      const respuesta = await fetch('http://10.16.72.150:5000/v1/usuarios/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
